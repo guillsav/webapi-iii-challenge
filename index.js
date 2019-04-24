@@ -1,7 +1,4 @@
-const express = require('express');
-const morgan = require('morgan');
-
-const server = express();
+const server = require('./server.js');
 
 const PORT = 5000;
 
