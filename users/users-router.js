@@ -31,18 +31,30 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     if (req.body.name === '') {
-      res
-        .status(400)
-        .json({
-          errorMessage:
-            'Please provide a name to create in order to create a new user'
-        });
+      res.status(400).json({
+        errorMessage:
+          'Please provide a name to create in order to create a new user'
+      });
     } else {
       const newUser = await userDb.insert(req.body);
       res.status(201).json(newUser);
     }
   } catch (error) {
     res.status(500).json({errorMessage: 'Error creating a new user'});
+  }
+});
+
+// DELETE route to remove an existing user.
+router.delete('/:id', async (req, res) => {
+  try {
+    const deletedUser = await userDb.remove(req.params.id);
+    if (!deletedUser) {
+      res.status(404).json({errorMessage: 'User not found'});
+    } else {
+      res.status(204).end();
+    }
+  } catch (error) {
+    res.status(500).json({errorMessage: 'Error deleting user'});
   }
 });
 
