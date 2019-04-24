@@ -3,30 +3,6 @@ const userDb = require('../data/helpers/userDb.js');
 
 const router = express.Router();
 
-// GET Route to get all the users from the daatabase.
-router.get('/', async (req, res) => {
-  try {
-    const users = await userDb.get(req.query);
-    res.status(200).json(users);
-  } catch (error) {
-    res.status(500).json({errorMessage: 'Error getting the users'});
-  }
-});
-
-// GET route to get a single user based on the id parameter in the url.
-router.get('/:id', async (req, res) => {
-  try {
-    const user = await userDb.getById(req.params.id, req.body);
-    if (!user) {
-      res.status(404).json({errorMessage: 'User not found'});
-    } else {
-      res.status(200).json(user);
-    }
-  } catch (error) {
-    res.status(500).json({errorMessage: 'Error getting the user'});
-  }
-});
-
 // POST route to create a new user.
 router.post('/', async (req, res) => {
   try {
@@ -44,17 +20,29 @@ router.post('/', async (req, res) => {
   }
 });
 
-// DELETE route to remove an existing user.
-router.delete('/:id', async (req, res) => {
+// GET Route to get all the users from the database.
+router.get('/', async (req, res) => {
   try {
-    const deletedUser = await userDb.remove(req.params.id);
-    if (!deletedUser) {
+    const users = await userDb.get(req.query);
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({errorMessage: 'Error getting the users'});
+  }
+});
+
+// GET route to get a single user based on the id parameter in the url with the user's posts.
+router.get('/:id', async (req, res) => {
+  try {
+    const user = await userDb.getById(req.params.id, req.body);
+    if (!user) {
       res.status(404).json({errorMessage: 'User not found'});
     } else {
-      res.status(204).end();
+      const posts = await userDb.getUserPosts(req.params.id, req.body);
+      const foundUser = {...user, posts};
+      res.status(200).json(foundUser);
     }
   } catch (error) {
-    res.status(500).json({errorMessage: 'Error deleting user'});
+    res.status(500).json({errorMessage: 'Error getting the user'});
   }
 });
 
@@ -73,6 +61,20 @@ router.put('/:id', async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({errorMessage: 'Error updating the user'});
+  }
+});
+
+// DELETE route to remove an existing user.
+router.delete('/:id', async (req, res) => {
+  try {
+    const deletedUser = await userDb.remove(req.params.id);
+    if (!deletedUser) {
+      res.status(404).json({errorMessage: 'User not found'});
+    } else {
+      res.status(204).end();
+    }
+  } catch (error) {
+    res.status(500).json({errorMessage: 'Error deleting user'});
   }
 });
 
