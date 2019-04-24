@@ -44,4 +44,17 @@ router.post('/', async (req, res) => {
   }
 });
 
+router.delete('/:id', async (req, res) => {
+  try {
+    const deletedPost = await postDb.remove(req.params.id);
+    if (deletedPost) {
+      res.status(204).end();
+    } else {
+      res.status(404).json({errorMessage: 'Post not found'});
+    }
+  } catch (error) {
+    res.status(500).json({errorMessage: 'Error deleting the post'});
+  }
+});
+
 module.exports = router;
