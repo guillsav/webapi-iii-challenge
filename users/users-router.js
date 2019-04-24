@@ -58,4 +58,22 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// PUT route to edit an existing user.
+router.put('/:id', async (req, res) => {
+  try {
+    if (req.body.name == '') {
+      res.status(400).json({errorMessage: 'Please provide a name to the user'});
+    } else {
+      const updatedUser = await userDb.update(req.params.id, req.body);
+      if (!updatedUser) {
+        res.status(404).json({errorMessage: 'User not found'});
+      } else {
+        res.status(201).json(updatedUser);
+      }
+    }
+  } catch (error) {
+    res.status(500).json({errorMessage: 'Error updating the user'});
+  }
+});
+
 module.exports = router;
