@@ -5,7 +5,7 @@ const usersRouter = require('./users/users-router.js');
 
 const server = express();
 
-// Global middleware
+// Global middlewares
 server.use(express.json());
 server.use(morgan('dev'));
 
