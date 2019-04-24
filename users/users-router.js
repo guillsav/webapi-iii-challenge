@@ -27,4 +27,23 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// POST route to create a new user.
+router.post('/', async (req, res) => {
+  try {
+    if (req.body.name === '') {
+      res
+        .status(400)
+        .json({
+          errorMessage:
+            'Please provide a name to create in order to create a new user'
+        });
+    } else {
+      const newUser = await userDb.insert(req.body);
+      res.status(201).json(newUser);
+    }
+  } catch (error) {
+    res.status(500).json({errorMessage: 'Error creating a new user'});
+  }
+});
+
 module.exports = router;
