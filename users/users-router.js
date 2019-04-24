@@ -38,8 +38,7 @@ router.get('/:id', async (req, res) => {
       res.status(404).json({errorMessage: 'User not found'});
     } else {
       const posts = await userDb.getUserPosts(req.params.id, req.body);
-      const foundUser = {...user, posts};
-      res.status(200).json(foundUser);
+      res.status(200).json({...user, posts});
     }
   } catch (error) {
     res.status(500).json({errorMessage: 'Error getting the user'});
