@@ -1,8 +1,8 @@
 const express = require('express');
 const postDb = require('../data/helpers/postDb.js');
 const userDb = require('../data/helpers/userDb.js');
-const db = require('../data/dbConfig.js');
 
+// Router Created.
 const router = express.Router();
 
 // Custom middlewares
@@ -14,7 +14,7 @@ function checkText(req, res, next) {
   } else {
     next();
   }
-} //Checks if the text for the post was provided in the request of a POST or PUT route.
+} // Checks if the text for the post was provided in the request of a POST or PUT route.
 
 function checkuserId(req, res, next) {
   const id = req.body.user_id;
@@ -26,7 +26,7 @@ function checkuserId(req, res, next) {
   } else {
     next();
   }
-} //Checks if the user ID was provided in the request of a POST or PUT route.
+} // Checks if the user ID was provided in the request of a POST or PUT route.
 
 function isUserId(req, res, next) {
   const id = parseInt(req.body.user_id);
@@ -42,7 +42,7 @@ function isUserId(req, res, next) {
     res.status(500).json({errorMessage: 'Error checking user'});
   }
   next();
-} //Checks if the user ID provided in the request of a POST or PUT route belongs to an existing user in the database.
+} // Checks if the user ID provided in the request of a POST or PUT route belongs to an existing user in the database.
 
 // Routes
 router.post('/', isUserId, checkText, checkuserId, async (req, res) => {
@@ -54,7 +54,7 @@ router.post('/', isUserId, checkText, checkuserId, async (req, res) => {
       errorMessage: `Error couldn't create the new post in the database`
     });
   }
-});
+}); // Route to CREATE a new post in the database.
 
 router.get('/', async (req, res) => {
   try {
@@ -65,7 +65,7 @@ router.get('/', async (req, res) => {
       .status(500)
       .json({errorMessage: 'Error retrieving the posts from the database'});
   }
-});
+}); // Route to GET all the posts from the database.
 
 router.get('/:id', async (req, res) => {
   try {
@@ -80,7 +80,7 @@ router.get('/:id', async (req, res) => {
       .status(500)
       .json({errorMessage: 'Error retrieving post from the database'});
   }
-});
+}); // Route to GET a single post from the database.
 
 router.put('/:id', checkText, checkuserId, async (req, res) => {
   try {
@@ -95,7 +95,7 @@ router.put('/:id', checkText, checkuserId, async (req, res) => {
       .status(500)
       .json({errorMessage: 'Error editing the post in the database'});
   }
-});
+}); // Route to UPDATE an existing post in the database.
 
 router.delete('/:id', async (req, res) => {
   try {
@@ -111,6 +111,7 @@ router.delete('/:id', async (req, res) => {
       .status(500)
       .json({errorMessage: 'Error deleting post from the database'});
   }
-});
+}); // Route to DELETE an existing post in the database
 
+// Exporting router
 module.exports = router;
