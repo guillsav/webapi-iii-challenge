@@ -1,9 +1,10 @@
 const express = require('express');
 const userDb = require('../data/helpers/userDb.js');
 
+//  Router created
 const router = express.Router();
 
-// Custom Middleware
+// Custom middleware
 function checkForName(req, res, next) {
   const {name} = req.body;
   if (!name) {
@@ -11,7 +12,7 @@ function checkForName(req, res, next) {
   } else {
     next();
   }
-}
+} // Checks if name was provided in the request body of a POST or PUT request
 
 router.post('/', checkForName, (req, res) => {
   const newUser = req.body;
@@ -23,7 +24,7 @@ router.post('/', checkForName, (req, res) => {
         .status(500)
         .json({errorMessage: 'Error creating user in the database'})
     );
-});
+}); // Route to CREATE a new user in the database.
 
 router.get('/', (req, res) => {
   userDb
@@ -34,7 +35,7 @@ router.get('/', (req, res) => {
         .json(500)
         .json({errorMessage: 'Error retrieving users from the database'})
     );
-});
+}); // Route to GET all the users from the database.
 
 router.get('/:id', (req, res) => {
   const {id} = req.params;
@@ -52,7 +53,7 @@ router.get('/:id', (req, res) => {
         .status(404)
         .json({errorMessage: `Error getting the user from the database`})
     );
-});
+}); // Route to GET a single existing user from the database.
 
 router.put('/:id', checkForName, (req, res) => {
   const {id} = req.params;
@@ -70,6 +71,26 @@ router.put('/:id', checkForName, (req, res) => {
         .status(500)
         .json({errorMessage: 'Error updating the user in the database'})
     );
-});
+}); // Route to UPDATE an existing user from the database.
 
+router.delete('/:id', async (req, res) => {
+  const id = req.params.id;
+  try {
+    const deletedUser = await userDb.remove(id, req.body);
+
+    if (deletedUser) {
+      res
+        .status(200)
+        .json({message: 'User was successfuly deleted from the database.'});
+    } else {
+      res.status(404).json({errorMessage: 'User ID not found.'});
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({errorMessage: 'Error deleting the user from the database.'});
+  }
+}); // Route to DELETE an existing user from the database.
+
+// Exporting users router.
 module.exports = router;

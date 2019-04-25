@@ -2,7 +2,7 @@ const express = require('express');
 const postDb = require('../data/helpers/postDb.js');
 const userDb = require('../data/helpers/userDb.js');
 
-// Router Created.
+// Router created.
 const router = express.Router();
 
 // Custom middlewares
@@ -113,5 +113,5 @@ router.delete('/:id', async (req, res) => {
   }
 }); // Route to DELETE an existing post in the database
 
-// Exporting router
+// Exporting posts router.
 module.exports = router;
