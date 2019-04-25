@@ -1,0 +1,98 @@
+const express = require('express');
+const postDb = require('../data/helpers/postDb.js');
+
+const router = express.Router();
+
+// Custom middlewares
+function checkText(req, res, next) {
+  const text = req.body.text;
+
+  if (!text || text === '') {
+    res.status(404).json({errorMessage: 'Please provide text for the post'});
+  } else {
+    next();
+  }
+}
+
+function checkuserId(req, res, next) {
+  const id = req.body.user_id;
+
+  if (!id || id === '') {
+    res
+      .status(404)
+      .json({errorMessage: 'Please provide a user ID for the post'});
+  } else {
+    next();
+  }
+}
+
+// Routes
+router.post('/', checkText, checkuserId, async (req, res) => {
+  try {
+    const newPost = await postDb.insert(req.body);
+    res.status(201).json(newPost);
+  } catch (error) {
+    res.status(500).json({
+      errorMessage: `Error couldn't create the new post in the database`
+    });
+  }
+});
+
+router.get('/', async (req, res) => {
+  try {
+    const posts = await postDb.get(req.body);
+    res.status(200).json(posts);
+  } catch (error) {
+    res
+      .status(500)
+      .json({errorMessage: 'Error retrieving the posts from the database'});
+  }
+});
+
+router.get('/:id', async (req, res) => {
+  try {
+    const foundPost = await postDb.getById(req.params.id, req.body);
+    if (foundPost) {
+      res.status(200).json(foundPost);
+    } else {
+      res.status(404).json({errorMessage: 'Post not found'});
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({errorMessage: 'Error retrieving post from the database'});
+  }
+});
+
+router.put('/:id', checkText, checkuserId, async (req, res) => {
+  try {
+    const editedPost = await postDb.update(req.params.id, req.body);
+    if (editedPost) {
+      res.status(201).json(editedPost);
+    } else {
+      res.status(404).json({errorMessage: 'Post ID not found'});
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({errorMessage: 'Error editing the post in the database'});
+  }
+});
+
+router.delete('/:id', async (req, res) => {
+  try {
+    const deletedPost = await postDb.remove(req.params.id, req.body);
+
+    if (deletedPost) {
+      res.status(204).end();
+    } else {
+      res.status(404).json({errorMessage: 'Post ID not found'});
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({errorMessage: 'Error deleting post from the database'});
+  }
+});
+
+module.exports = router;
