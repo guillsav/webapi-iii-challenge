@@ -55,6 +55,23 @@ router.get('/:id', (req, res) => {
     );
 }); // Route to GET a single existing user from the database.
 
+router.get('/posts/:userId', async (req, res) => {
+  try {
+    const posts = await userDb.getUserPosts(req.params.userId, req.body);
+    const user = await userDb.getById(req.params.userId, req.body);
+
+    if (!user) {
+      res.status(404).json({errorMessage: 'User not found in the database'});
+    } else if (posts.length === 0) {
+      res.status(404).json({errorMessage: 'Not post found for this user '});
+    } else {
+      res.status(200).json({...user, posts});
+    }
+  } catch (error) {
+    res.status(500).json({errorMessage: 'Error getting the user posts'});
+  }
+}); // Route to GET an existing user and the user's posts from the database.
+
 router.put('/:id', checkForName, (req, res) => {
   const {id} = req.params;
   userDb
