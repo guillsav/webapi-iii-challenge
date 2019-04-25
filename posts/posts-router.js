@@ -1,5 +1,7 @@
 const express = require('express');
 const postDb = require('../data/helpers/postDb.js');
+const userDb = require('../data/helpers/userDb.js');
+const db = require('../data/dbConfig.js');
 
 const router = express.Router();
 
@@ -12,7 +14,7 @@ function checkText(req, res, next) {
   } else {
     next();
   }
-}
+} //Checks if the text for the post was provided in the request of a POST or PUT route.
 
 function checkuserId(req, res, next) {
   const id = req.body.user_id;
@@ -24,10 +26,26 @@ function checkuserId(req, res, next) {
   } else {
     next();
   }
-}
+} //Checks if the user ID was provided in the request of a POST or PUT route.
+
+function isUserId(req, res, next) {
+  const id = parseInt(req.body.user_id);
+  if (id) {
+    userDb.getById(id).then(user => {
+      if (user) {
+        res.status(200).json(1);
+      } else {
+        res.status(404).json({errorMessage: `User ID doesn't exist`});
+      }
+    });
+  } else {
+    res.status(500).json({errorMessage: 'Error checking user'});
+  }
+  next();
+} //Checks if the user ID provided in the request of a POST or PUT route belongs to an existing user in the database.
 
 // Routes
-router.post('/', checkText, checkuserId, async (req, res) => {
+router.post('/', isUserId, checkText, checkuserId, async (req, res) => {
   try {
     const newPost = await postDb.insert(req.body);
     res.status(201).json(newPost);
