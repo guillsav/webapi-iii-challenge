@@ -3,6 +3,17 @@ const userDb = require('../data/helpers/userDb.js');
 
 const router = express.Router();
 
+function upperCaseName(req, res, next) {
+  if (req.method === 'POST' || req.method === 'PUT') {
+    req.body.name = req.body.name.toUpperCase();
+    next();
+  } else {
+    next();
+  }
+}
+
+router.use(upperCaseName);
+
 // POST route to create a new user.
 router.post('/', async (req, res) => {
   try {
@@ -22,6 +33,7 @@ router.post('/', async (req, res) => {
 
 // GET Route to get all the users from the database.
 router.get('/', async (req, res) => {
+  console.log(req.method);
   try {
     const users = await userDb.get(req.query);
     res.status(200).json(users);
