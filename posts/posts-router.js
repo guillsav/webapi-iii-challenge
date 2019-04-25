@@ -1,48 +1,13 @@
 const express = require('express');
 const postDb = require('../data/helpers/postDb.js');
-const userDb = require('../data/helpers/userDb.js');
+
+// Custom middlewares
+const checkText = require('../middlewares/checkText.js');
+const checkuserId = require('../middlewares/checkUserId');
+const isUserId = require('../middlewares/isUserId');
 
 // Router created.
 const router = express.Router();
-
-// Custom middlewares
-function checkText(req, res, next) {
-  const text = req.body.text;
-
-  if (!text || text === '') {
-    res.status(404).json({errorMessage: 'Please provide text for the post'});
-  } else {
-    next();
-  }
-} // Checks if the text for the post was provided in the request of a POST or PUT route.
-
-function checkuserId(req, res, next) {
-  const id = req.body.user_id;
-
-  if (!id || id === '') {
-    res
-      .status(404)
-      .json({errorMessage: 'Please provide a user ID for the post'});
-  } else {
-    next();
-  }
-} // Checks if the user ID was provided in the request of a POST or PUT route.
-
-function isUserId(req, res, next) {
-  const id = parseInt(req.body.user_id);
-  if (id) {
-    userDb.getById(id).then(user => {
-      if (user) {
-        res.status(200).json(1);
-      } else {
-        res.status(404).json({errorMessage: `User ID doesn't exist`});
-      }
-    });
-  } else {
-    res.status(500).json({errorMessage: 'Error checking user'});
-  }
-  next();
-} // Checks if the user ID provided in the request of a POST or PUT route belongs to an existing user in the database.
 
 // Routes
 router.post('/', isUserId, checkText, checkuserId, async (req, res) => {
