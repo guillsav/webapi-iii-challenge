@@ -1,7 +1,6 @@
 function checkText(req, res, next) {
-  const text = req.body.text;
-
-  if (!text || text === '') {
+  const {text} = req.body;
+  if (!text) {
     res.status(404).json({errorMessage: 'Please provide text for the post'});
   } else {
     next();

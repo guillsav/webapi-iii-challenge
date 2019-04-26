@@ -11,6 +11,7 @@ const router = express.Router();
 
 // Routes
 router.post('/', isUserId, checkText, checkuserId, async (req, res) => {
+  console.log(req.body);
   try {
     const newPost = await postDb.insert(req.body);
     res.status(201).json(newPost);
