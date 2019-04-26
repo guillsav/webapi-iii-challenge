@@ -1,5 +1,6 @@
 const express = require('express');
 const postDb = require('../data/helpers/postDb.js');
+const userDb = require('../data/helpers/userDb.js');
 
 // Custom middlewares
 const checkText = require('../middlewares/checkText.js');
@@ -78,6 +79,22 @@ router.delete('/:id', async (req, res) => {
       .json({errorMessage: 'Error deleting post from the database'});
   }
 }); // Route to DELETE an existing post in the database
+
+router.delete('/users/:user_id', async (req, res, next) => {
+  try {
+    const postsFromUser = await userDb.getUserPosts(req.params.user_id);
+
+    if (postsFromUser) {
+      const deletedPosts = await postsFromUser.map(post => {
+        return postDb.remove(post.id).then(posts => res.status(204).end());
+      });
+    } else {
+      res.status(404).json({errorMessage: `Couldn't find user's posts`});
+    }
+  } catch (error) {
+    res.status(500).json({errorMessage: `Error couldn't delete user's posts`});
+  }
+});
 
 // Exporting posts router.
 module.exports = router;
