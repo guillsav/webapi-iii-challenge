@@ -80,7 +80,7 @@ router.delete('/:id', async (req, res) => {
   }
 }); // Route to DELETE an existing post in the database
 
-router.delete('/users/:user_id', async (req, res, next) => {
+router.delete('/users/:user_id', async (req, res) => {
   try {
     const postsFromUser = await userDb.getUserPosts(req.params.user_id);
 
@@ -94,7 +94,7 @@ router.delete('/users/:user_id', async (req, res, next) => {
   } catch (error) {
     res.status(500).json({errorMessage: `Error couldn't delete user's posts`});
   }
-});
+}); // Route to DELETE all posts from an existing user in the database
 
 // Exporting posts router.
 module.exports = router;
